@@ -131,6 +131,8 @@ class ImageConverter:
         output_name = name_without_ext.replace("-10000px", "") + "-4k.jpg"
         output_path = os.path.join("python", output_name)
 
+        os.makedirs("python", exist_ok=True)
+
         print("=== 우아하게 넓히기 ===")
         print("")
 
@@ -188,14 +190,14 @@ def main():
     if os.path.isfile(input_path):
         converter.process_image(input_path)
     elif os.path.isdir(input_path):
-        supported_extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif')
+        supported_extensions = (".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")
         processed = 0
         for filename in sorted(os.listdir(input_path)):
             if filename.lower().endswith(supported_extensions):
                 filepath = os.path.join(input_path, filename)
-                print(f"\n{'='*60}")
+                print(f"\n{'=' * 60}")
                 print(f"Processing: {filename}")
-                print('='*60)
+                print("=" * 60)
                 converter.process_image(filepath)
                 processed += 1
         print(f"\n총 {processed}개 이미지 처리 완료")
