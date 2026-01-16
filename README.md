@@ -5,8 +5,11 @@
 ## 빠른 시작
 
 ```bash
-# Python 버전 (권장)
+# Python 버전 (권장 - 가장 빠름)
 python3 widen_gracefully.py 입력파일.jpg
+
+# Go 버전 (단일 바이너리 - 배포 용이)
+./widen-gracefully-go 입력파일.jpg
 
 # Shell 버전 (대안)
 chmod +x widen-gracefully-memory.sh
@@ -40,6 +43,21 @@ magick -version
 ```
 
 **현재 버전**: ImageMagick 7.1.2-12 Q16-HDRI
+
+### Go 버전
+
+**요구 사항**: Go 1.20 이상
+
+```bash
+# 소스에서 빌드
+go build -o widen-gracefully-go widen_gracefully.go
+
+# 또는 미리 빌드된 바이너리 사용 (리눅스, macOS, 윈도우)
+# 바이너리 다운로드 후 실행 권한 부여
+chmod +x widen-gracefully-go
+```
+
+**현재 버전**: Go 1.23.4
 
 ## 사용법
 
