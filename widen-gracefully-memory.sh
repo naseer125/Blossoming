@@ -12,7 +12,8 @@ EDGE_PERCENT=1
 
 process_image() {
     local input_file="$1"
-    local basename=$(basename "$input_file" .jpg)
+    local basename=$(basename "$input_file")
+    basename="${basename%.*}"
     local output_name=$(echo "$basename" | sed 's/-10000px//')-4k
     local output_path="shell/$output_name.jpg"
 
