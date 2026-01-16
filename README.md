@@ -31,11 +31,15 @@ uv pip install Pillow numpy
 
 ### Shell 버전
 
+**요구 사항**: ImageMagick 7.0 이상
+
 ```bash
 # 이미 ImageMagick이 설치되어 있다면 건너뜀
 # 설치 확인
 magick -version
 ```
+
+**현재 버전**: ImageMagick 7.1.2-12 Q16-HDRI
 
 ## 사용법
 
