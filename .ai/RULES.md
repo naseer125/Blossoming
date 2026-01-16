@@ -8,7 +8,12 @@
 
 **실행 방법**:
 ```bash
+# 단일 이미지
 python3 widen_gracefully.py 입력파일.jpg
+
+# 폴더 전체 (권장)
+python3 widen_gracefully.py /path/to/folder
+python3 widen_gracefully.py .  # 현재 폴더
 ```
 
 **중요 규칙**:
@@ -29,7 +34,12 @@ python3 widen_gracefully.py 입력파일.jpg
 
 **실행 방법**:
 ```bash
+# 단일 이미지
 ./widen-gracefully-memory.sh 입력파일.jpg
+
+# 폴더 전체 (권장)
+./widen-gracefully-memory.sh /path/to/folder
+./widen-gracefully-memory.sh .  # 현재 폴더
 ```
 
 **중요 규칙**:
@@ -145,22 +155,31 @@ uv pip list
 
 ## 권장 사용 패턴
 
-### 일반적인 경우
+### 단일 이미지
 ```bash
 # Python 사용 (빠름)
 python3 widen_gracefully.py 이미지.jpg
 ```
 
+### 폴더 전체 처리 (권장)
+```bash
+# Python 사용
+python3 widen_gracefully.py /path/to/folder
+
+# 현재 폴더의 모든 이미지 처리
+python3 widen_gracefully.py .
+```
+
 ### 디버깅 필요한 경우
 ```bash
 # Shell 사용 (간단한 로그)
-./widen-gracefully-memory.sh 이미지.jpg
+./widen-gracefully-memory.sh /path/to/folder
 ```
 
-### 대량 처리
+### 병렬 처리 (대규모 폴더)
 ```bash
-# 병렬 처리 (최대 4개)
-ls *.jpg | head -4 | xargs -P 4 -I {} python3 widen_gracefully.py {}
+# 여러 폴더를 병렬로 처리 (최대 4개)
+find /path/to/images -type d -maxdepth 1 | head -4 | xargs -P 4 -I {} python3 widen_gracefully.py "{}"
 ```
 
 ## 긴급 상황 대응

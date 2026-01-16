@@ -55,19 +55,28 @@ python3 widen_gracefully.py ariel-introduction-04-10000px.jpg
 # 결과: shell/ariel-introduction-04-4k.jpg
 ```
 
-### 여러 이미지 한번에 변환
+### 폴더 전체 변환 (추천)
+
+폴더 경로를 지정하면 해당 폴더의 모든 이미지를 자동으로 처리합니다.
 
 ```bash
 # Python
-for file in *.jpg; do
-    python3 widen_gracefully.py "$file"
-done
+python3 widen_gracefully.py /path/to/images
+# 결과: python/ 폴더에 모든 이미지가 변환됨
 
 # Shell
-for file in *.jpg; do
-    ./widen-gracefully-memory.sh "$file"
-done
+./widen-gracefully-memory.sh /path/to/images
+# 결과: shell/ 폴더에 모든 이미지가 변환됨
 ```
+
+**현재 폴더의 모든 이미지 처리**:
+```bash
+python3 widen_gracefully.py .
+# 또는
+./widen-gracefully-memory.sh .
+```
+
+**지원하는 파일 형식**: `.jpg`, `.jpeg`, `.png`, `.bmp`, `.tiff`, `.tif` (대소문자 무시)
 
 ## 결과물
 
@@ -108,6 +117,22 @@ temp/
 | Shell | 52.468초 | 10.494초 |
 
 **Python이 11배 더 빠릅니다**
+
+## 검증 기록
+
+### 2025-01-17 검증
+
+**테스트 이미지**: 5개 세로형 이미지 (ariel-introduction-04, 24, 26, 28, 29)
+- 평균 크기: 8684x11467 픽셀
+- 5개 모두 3840x2160으로 정확하게 변환됨
+
+**성능 측정 결과**:
+|| 버전 | 총 시간 | 평균/파일 |
+||------|---------|-----------|
+|| Python | 4.647초 | 0.929초 |
+|| Shell | 51.924초 | 10.385초 |
+
+**Python이 11.2배 더 빠름** - README.md 기존 데이터와 거의 동일 (오차 범위 3% 이내)
 
 ## 자주 묻는 질문
 
