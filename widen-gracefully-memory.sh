@@ -3,6 +3,8 @@
 # 우아하게 넓히기 스크립트 (메모리 최적화 버전)
 # 세로 이미지를 가로 16:9로 우아하게 변환 - 최소 파일 I/O
 
+shopt -s nullglob
+
 # 설정값
 WATERMARK_WIDTH_RATIO=0.23
 WATERMARK_HEIGHT_RATIO=0.04
