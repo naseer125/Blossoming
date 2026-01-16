@@ -17,6 +17,8 @@ process_image() {
     local output_name=$(echo "$basename" | sed 's/-10000px//')-4k
     local output_path="shell/$output_name.jpg"
 
+    mkdir -p shell/
+
     echo "=== 우아하게 넓히기 (메모리 최적화) ==="
     echo ""
 
