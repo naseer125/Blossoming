@@ -137,46 +137,45 @@ class ImageConverter:
         print("")
 
         try:
-            # 원본 이미지 로드 (메모리)
-            img = Image.open(input_path)
-            icc_profile = img.info.get("icc_profile")
+            with Image.open(input_path) as img:
+                icc_profile = img.info.get("icc_profile")
 
-            # Step 1: 워터마크 제거
-            print("=== Step 1: 워터마크 제거 ===")
-            img = self.remove_watermark(img)
-            print("")
+                # Step 1: 워터마크 제거
+                print("=== Step 1: 워터마크 제거 ===")
+                img = self.remove_watermark(img)
+                print("")
 
-            # Step 2: 여백 제거 및 리사이즈
-            print("=== Step 2: 여백 제거 및 리사이즈 ===")
-            img = self.trim_whitespace(img)
-            img = self.resize_to_height(img)
-            print("")
+                # Step 2: 여백 제거 및 리사이즈
+                print("=== Step 2: 여백 제거 및 리사이즈 ===")
+                img = self.trim_whitespace(img)
+                img = self.resize_to_height(img)
+                print("")
 
-            # Step 3: 16:9 변환
-            print("=== Step 3: 16:9 변환 ===")
-            result_img = self.convert_to_16x9(img)
-            print("")
+                # Step 3: 16:9 변환
+                print("=== Step 3: 16:9 변환 ===")
+                result_img = self.convert_to_16x9(img)
+                print("")
 
-            # 결과 저장 (마지막에만 파일 I/O)
-            if icc_profile:
-                result_img.save(
-                    output_path,
-                    quality=self.quality,
-                    subsampling=1,
-                    icc_profile=icc_profile,
+                # 결과 저장 (마지막에만 파일 I/O)
+                if icc_profile:
+                    result_img.save(
+                        output_path,
+                        quality=self.quality,
+                        subsampling=1,
+                        icc_profile=icc_profile,
+                    )
+                else:
+                    result_img.save(output_path, quality=self.quality, subsampling=1)
+
+                result_size = result_img.size
+                print("=== 완료! ===")
+                print(
+                    f"생성된 파일: python/{output_name} ({result_size[0]}x{result_size[1]})"
                 )
-            else:
-                result_img.save(output_path, quality=self.quality, subsampling=1)
 
-            result_size = result_img.size
-            print("=== 완료! ===")
-            print(
-                f"생성된 파일: python/{output_name} ({result_size[0]}x{result_size[1]})"
-            )
-
-        finally:
-            # 임시 파일이 남아있으면 삭제
-            pass  # 메모리 처리라 임시 파일이 없음
+        except Exception as e:
+            print(f"오류 발생: {e}")
+            raise
 
 
 def main():
