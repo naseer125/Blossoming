@@ -37,6 +37,10 @@ right-blur.jpg
 # Output directories (optional - remove if you want to track results)
 python/
 shell/
+go/
+
+# Compiled binaries
+widen-gracefully-go
 
 # Logs
 *.log
