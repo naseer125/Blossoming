@@ -217,32 +217,149 @@ class ImageConverter:
 
         return cropped
 
-    def crop_16_9_smart_hybrid(self, img):
-        """하이브리드 스마트 크롭 (얼굴 → 엣지 → 중앙)"""
+    def _crop_by_face(self, img):
+        """얼굴 감지 기준 크롭"""
         width, height = img.size
         target_height = int(width * 9 / 16)
 
-        print(f"하이브리드 스마트 크롭: {width}x{target_height}")
+        # 얼굴 감지
+        if not hasattr(self, "face_cascade"):
+            print("  - 얼굴 감지 모델 로드 중...")
+            self._load_face_cascade()
+            print("  - 모델 로드 완료")
 
-        # 1. 얼굴 감지 시도
+        img_array = np.array(img)
+        gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+
+        faces = self.face_cascade.detectMultiScale(
+            gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
+        )
+
+        if len(faces) > 0:
+            (x, y, w, h) = faces[0]
+
+            # 머리카락 끝 감지 시도
+            hair_top_y = self._detect_hair_top(gray, x + w // 2, y)
+
+            if hair_top_y is not None:
+                # 엣지 감지 성공
+                crop_y = max(0, hair_top_y - int(h * 0.1))
+                print(f"  - 머리카락 감지됨 (엣지 기반), Y={crop_y}")
+            else:
+                # 엣지 감지 실패 → 보수적 여유 (장발 기준)
+                hair_margin = int(h * 1.5)
+                crop_y = max(0, y - hair_margin)
+                print(f"  - 머리카락 감지 실패, 보수적 여유 사용, Y={crop_y}")
+        else:
+            return None  # 얼굴 없음
+
+        cropped = img.crop((0, crop_y, width, crop_y + target_height))
+
+        return cropped
+
+    def _crop_by_body(self, img):
+        """몸통 감지 기준 크롭"""
+        width, height = img.size
+        target_height = int(width * 9 / 16)
+
+        # HOG Detector 로드
+        if not hasattr(self, "hog"):
+            print("  - HOG Detector 로드 중...")
+            self._load_hog_detector()
+            print("  - HOG Detector 로드 완료")
+
+        # PIL → OpenCV
+        img_array = np.array(img)
+
+        # 몸통 감지
+        boxes, weights = self.hog.detectMultiScale(
+            img_array, winStride=(8, 8), padding=(8, 8), scale=1.05
+        )
+
+        if len(boxes) > 0:
+            # 가장 상단 박스 선택
+            top_body = min(boxes, key=lambda b: b[1])
+            (x, y, w, h) = top_body
+
+            # 몸통 상단에서 위로 여유 (머리카락 추정)
+            # 몸통 높이(h)에서 머리 비율(20%) 추정
+            head_estimate = int(h * 0.2)
+            crop_y = max(0, y - head_estimate)
+
+            print(f"  - 몸통 감지됨, 상단 Y={y}, 머리 추정={head_estimate}")
+            print(f"  - 크롭 Y={crop_y}")
+
+            cropped = img.crop((0, crop_y, width, crop_y + target_height))
+
+            return cropped
+        else:
+            return None  # 몸통 없음
+
+    def _crop_by_center(self, img):
+        """중앙 기준 크롭"""
+        width, height = img.size
+        target_height = int(width * 9 / 16)
+
+        crop_y = (height - target_height) // 2
+
+        print(f"  - 중앙 크롭, Y={crop_y}")
+
+        cropped = img.crop((0, crop_y, width, crop_y + target_height))
+
+        return cropped
+
+    def crop_16_9_smart_hybrid_v2(self, img):
+        """3단계 폴백 스마트 크롭 (얼굴 → 몸통 → 중앙)"""
+        width, height = img.size
+        target_height = int(width * 9 / 16)
+
+        print(f"하이브리드 스마트 크롭 v2: {width}x{target_height}")
+
+        # 1차: 얼굴 감지 시도
         try:
             print("Step 1: 얼굴 감지 시도...")
-            cropped = self.crop_16_9_smart_face_cv2(img)
-            return cropped
+            cropped = self._crop_by_face(img)
+            if cropped is not None:
+                return cropped
         except Exception as e:
             print(f"얼굴 감지 실패: {e}")
 
-        # 2. 엣지 감지 시도
+        # 2차: 몸통 감지 시도
         try:
-            print("Step 2: 엣지 감지 시도...")
-            cropped = self.crop_16_9_smart_edge(img)
-            return cropped
+            print("Step 2: 몸통 감지 시도...")
+            cropped = self._crop_by_body(img)
+            if cropped is not None:
+                return cropped
         except Exception as e:
-            print(f"엣지 감지 실패: {e}")
+            print(f"몸통 감지 실패: {e}")
 
-        # 3. 중앙 크롭 (폴백)
+        # 3차: 중앙 크롭 (폴백)
         print("Step 3: 중앙 크롭으로 대체")
-        return self.crop_to_16_9_center(img)
+        return self._crop_by_center(img)
+
+    def _detect_hair_top(self, gray, face_center_x, face_y):
+        """엣지 감지로 머리카락 상단 감지"""
+        max_scan_height = face_y  # 얼굴 상단까지 스캔
+        threshold = 50  # 엣지 임계값
+
+        # 위로 스캔하며 가장 먼저 엣지 감지
+        for y in range(face_y - 1, max(0, face_y - max_scan_height), -1):
+            # 얼굴 중심 X 기준 픽셀 변화량 계산
+            current_pixel = gray[y, face_center_x]
+            prev_pixel = gray[y + 1, face_center_x]
+
+            # 엣지 감지 (머리카락 끝)
+            if abs(int(current_pixel) - int(prev_pixel)) > threshold:
+                return y + 1  # 머리카락 시작점
+
+        return None  # 감지 실패
+
+    def _load_hog_detector(self):
+        """HOG Person Detector 로드"""
+        if not hasattr(self, "hog"):
+            hog = cv2.HOGDescriptor()
+            hog.setSVMDetector(cv2.HOGDescriptor.getDefaultPeopleDetector())
+            self.hog = hog
 
     def convert_to_16x9(self, img):
         """16:9 변환 (조건부 처리: 좁은 이미지는 좌우 블러 확장, 넓은 이미지는 중앙 크롭)"""
@@ -357,9 +474,9 @@ class ImageConverter:
                     # 가로형: 스마트 크롭 (워터마크/여백 제거 스킵)
                     print("=== 가로형 이미지 처리 (스마트 크롭) ===")
 
-                    # Step 1: 하이브리드 스마트 크롭
-                    print("Step 1: 하이브리드 스마트 크롭")
-                    img = self.crop_16_9_smart_hybrid(img)
+                    # Step 1: 하이브리드 스마트 크롭 (3단계 폴백)
+                    print("Step 1: 하이브리드 스마트 크롭 (3단계 폴백)")
+                    img = self.crop_16_9_smart_hybrid_v2(img)
                     print("")
 
                     # Step 2: 넓이 3840 리사이즈
