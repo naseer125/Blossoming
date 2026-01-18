@@ -4,6 +4,7 @@ import os
 import sys
 from PIL import Image, ImageFilter, ImageChops
 import numpy as np
+import cv2
 
 
 class ImageConverter:
@@ -115,6 +116,48 @@ class ImageConverter:
 
         print(f"리사이즈 완료: {self.target_width}x{new_height}")
         return resized_img
+
+    def _find_best_crop_y(self, edge_density, target_height):
+        """엣지 밀도가 최대인 크롭 위치 탐색"""
+        height = len(edge_density)
+        best_y = 0
+        max_density = 0
+
+        for y in range(height - target_height + 1):
+            window_density = np.sum(edge_density[y : y + target_height])
+            if window_density > max_density:
+                max_density = window_density
+                best_y = y
+
+        return best_y
+
+    def crop_16_9_smart_edge(self, img):
+        """엣지 감지 기반 스마트 크롭"""
+        width, height = img.size
+
+        # PIL 이미지 → OpenCV 배열
+        img_array = np.array(img)
+
+        # 그레이스케일 변환
+        gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+
+        # Canny 엣지 감지
+        edges = cv2.Canny(gray, 50, 150)
+
+        # Y축별 엣지 밀도 계산
+        edge_density = np.sum(edges, axis=1)
+
+        # 최적 크롭 위치 탐색
+        target_height = int(width * 9 / 16)
+        best_y = self._find_best_crop_y(edge_density, target_height)
+
+        # PIL 이미지로 복원
+        cropped = img.crop((0, best_y, width, best_y + target_height))
+
+        print(f"엣지 감지 스마트 크롭: {width}x{target_height}")
+        print(f"크롭 위치: Y={best_y}부터 {best_y + target_height}까지")
+
+        return cropped
 
     def convert_to_16x9(self, img):
         """16:9 변환 (조건부 처리: 좁은 이미지는 좌우 블러 확장, 넓은 이미지는 중앙 크롭)"""
