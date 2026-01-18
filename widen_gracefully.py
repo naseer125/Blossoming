@@ -217,6 +217,33 @@ class ImageConverter:
 
         return cropped
 
+    def crop_16_9_smart_hybrid(self, img):
+        """하이브리드 스마트 크롭 (얼굴 → 엣지 → 중앙)"""
+        width, height = img.size
+        target_height = int(width * 9 / 16)
+
+        print(f"하이브리드 스마트 크롭: {width}x{target_height}")
+
+        # 1. 얼굴 감지 시도
+        try:
+            print("Step 1: 얼굴 감지 시도...")
+            cropped = self.crop_16_9_smart_face_cv2(img)
+            return cropped
+        except Exception as e:
+            print(f"얼굴 감지 실패: {e}")
+
+        # 2. 엣지 감지 시도
+        try:
+            print("Step 2: 엣지 감지 시도...")
+            cropped = self.crop_16_9_smart_edge(img)
+            return cropped
+        except Exception as e:
+            print(f"엣지 감지 실패: {e}")
+
+        # 3. 중앙 크롭 (폴백)
+        print("Step 3: 중앙 크롭으로 대체")
+        return self.crop_to_16_9_center(img)
+
     def convert_to_16x9(self, img):
         """16:9 변환 (조건부 처리: 좁은 이미지는 좌우 블러 확장, 넓은 이미지는 중앙 크롭)"""
         current_width, current_height = img.size
