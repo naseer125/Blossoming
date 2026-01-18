@@ -83,40 +83,64 @@ class ImageConverter:
         return resized_img
 
     def convert_to_16x9(self, img):
-        """16:9 변환 (좌우 블러처리로 캔버스 확장, 메모리 처리)"""
+        """16:9 변환 (조건부 처리: 좁은 이미지는 좌우 블러 확장, 넓은 이미지는 중앙 크롭)"""
         current_width, current_height = img.size
 
-        edge_width = int(current_width * self.edge_percent / 100)
-        blur_width = (self.target_width - current_width) // 2
-
         print(f"현재 크기: {current_width}x{current_height}")
-        print(f"엣지 블러 폭: {edge_width}px")
 
-        # 좌측 엣지 추출
-        left_edge = img.crop((0, 0, edge_width, current_height))
-        left_edge_resized = left_edge.resize(
-            (blur_width, self.target_height), Image.LANCZOS
-        )
-        left_blurred = left_edge_resized.filter(ImageFilter.GaussianBlur(radius=50))
-
-        # 우측 엣지 추출
-        right_edge = img.crop(
-            (current_width - edge_width, 0, current_width, current_height)
-        )
-        right_edge_resized = right_edge.resize(
-            (blur_width, self.target_height), Image.LANCZOS
-        )
-        right_blurred = right_edge_resized.filter(ImageFilter.GaussianBlur(radius=50))
-
-        # 이미지 높이 조정
+        # 높이 조정 (모든 경우에 필요)
         if current_height != self.target_height:
             img = img.resize((current_width, self.target_height), Image.LANCZOS)
+            current_width, current_height = img.size
 
-        # 이미지 합성
-        result = Image.new("RGB", (self.target_width, self.target_height))
-        result.paste(left_blurred, (0, 0))
-        result.paste(img, (blur_width, 0))
-        result.paste(right_blurred, (blur_width + current_width, 0))
+        # 조건부 분기
+        if current_width < self.target_width:
+            # === 좁은 이미지: 좌우 블러 확장 ===
+            print("처리 방식: 좌우 블러 확장")
+
+            edge_width = int(current_width * self.edge_percent / 100)
+            blur_width = (self.target_width - current_width) // 2
+            print(f"엣지 블러 폭: {edge_width}px, 확장 폭: {blur_width}px (좌우 각각)")
+
+            # 좌측 엣지 추출 및 블러처리
+            left_edge = img.crop((0, 0, edge_width, current_height))
+            left_edge_resized = left_edge.resize(
+                (blur_width, self.target_height), Image.LANCZOS
+            )
+            left_blurred = left_edge_resized.filter(ImageFilter.GaussianBlur(radius=50))
+
+            # 우측 엣지 추출 및 블러처리
+            right_edge = img.crop(
+                (current_width - edge_width, 0, current_width, current_height)
+            )
+            right_edge_resized = right_edge.resize(
+                (blur_width, self.target_height), Image.LANCZOS
+            )
+            right_blurred = right_edge_resized.filter(
+                ImageFilter.GaussianBlur(radius=50)
+            )
+
+            # 이미지 합성
+            result = Image.new("RGB", (self.target_width, self.target_height))
+            result.paste(left_blurred, (0, 0))
+            result.paste(img, (blur_width, 0))
+            result.paste(right_blurred, (blur_width + current_width, 0))
+
+        elif current_width > self.target_width:
+            # === 넓은 이미지: 중앙 크롭 ===
+            print("처리 방식: 중앙 크롭")
+
+            crop_x = (current_width - self.target_width) // 2
+            print(f"크롭 위치: 좌측 {crop_x}px부터 {crop_x + self.target_width}px까지")
+
+            result = img.crop(
+                (crop_x, 0, crop_x + self.target_width, self.target_height)
+            )
+
+        else:
+            # === 정확한 비율: 그대로 사용 ===
+            print("처리 방식: 이미 정확한 16:9 비율")
+            result = img
 
         return result
 
