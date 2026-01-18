@@ -9,6 +9,7 @@
 *.bmp
 *.tiff
 *.tif
+Models/
 
 # 출력 디렉토리
 python/
