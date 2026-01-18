@@ -542,14 +542,15 @@ def main():
     elif os.path.isdir(input_path):
         supported_extensions = (".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")
         processed = 0
-        for filename in sorted(os.listdir(input_path)):
-            if filename.lower().endswith(supported_extensions):
-                filepath = os.path.join(input_path, filename)
-                print(f"\n{'=' * 60}")
-                print(f"Processing: {filename}")
-                print("=" * 60)
-                converter.process_image(filepath)
-                processed += 1
+        for root, _, files in os.walk(input_path):
+            for filename in sorted(files):
+                if filename.lower().endswith(supported_extensions):
+                    filepath = os.path.join(root, filename)
+                    print(f"\n{'=' * 60}")
+                    print(f"Processing: {filename}")
+                    print("=" * 60)
+                    converter.process_image(filepath)
+                    processed += 1
         print(f"\n총 {processed}개 이미지 처리 완료")
     else:
         print(f"오류: '{input_path}'은(는) 존재하지 않는 파일 또는 폴더입니다.")
