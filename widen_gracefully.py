@@ -207,21 +207,38 @@ class ImageConverter:
                     print("정방형 이미지: 처리 건너뜀")
                     return
 
-                # Step 1: 워터마크 제거
-                print("=== Step 1: 워터마크 제거 ===")
-                img = self.remove_watermark(img)
-                print("")
+                if orientation == "portrait":
+                    # 세로형: 기존 로직 유지
+                    # Step 1: 워터마크 제거
+                    print("=== Step 1: 워터마크 제거 ===")
+                    img = self.remove_watermark(img)
+                    print("")
 
-                # Step 2: 여백 제거 및 리사이즈
-                print("=== Step 2: 여백 제거 및 리사이즈 ===")
-                img = self.trim_whitespace(img)
-                img = self.resize_to_height(img)
-                print("")
+                    # Step 2: 여백 제거 및 리사이즈
+                    print("=== Step 2: 여백 제거 및 리사이즈 ===")
+                    img = self.trim_whitespace(img)
+                    img = self.resize_to_height(img)
+                    print("")
 
-                # Step 3: 16:9 변환
-                print("=== Step 3: 16:9 변환 ===")
-                result_img = self.convert_to_16x9(img)
-                print("")
+                    # Step 3: 16:9 변환
+                    print("=== Step 3: 16:9 변환 ===")
+                    result_img = self.convert_to_16x9(img)
+                    print("")
+
+                elif orientation == "landscape":
+                    # 가로형: 새 로직 (워터마크/여백 제거 스킵)
+                    print("=== 가로형 이미지 처리 ===")
+
+                    # Step 1: 중앙 16:9 크롭
+                    print("Step 1: 중앙 16:9 크롭")
+                    img = self.crop_to_16_9_center(img)
+                    print("")
+
+                    # Step 2: 넓이 3840 리사이즈
+                    print("Step 2: 넓이 3840 리사이즈")
+                    img = self.resize_to_width(img)
+                    result_img = img
+                    print("")
 
                 # 결과 저장 (마지막에만 파일 I/O)
                 if icc_profile:
