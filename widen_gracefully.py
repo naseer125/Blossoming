@@ -354,12 +354,12 @@ class ImageConverter:
                     print("")
 
                 elif orientation == "landscape":
-                    # 가로형: 새 로직 (워터마크/여백 제거 스킵)
-                    print("=== 가로형 이미지 처리 ===")
+                    # 가로형: 스마트 크롭 (워터마크/여백 제거 스킵)
+                    print("=== 가로형 이미지 처리 (스마트 크롭) ===")
 
-                    # Step 1: 중앙 16:9 크롭
-                    print("Step 1: 중앙 16:9 크롭")
-                    img = self.crop_to_16_9_center(img)
+                    # Step 1: 하이브리드 스마트 크롭
+                    print("Step 1: 하이브리드 스마트 크롭")
+                    img = self.crop_16_9_smart_hybrid(img)
                     print("")
 
                     # Step 2: 넓이 3840 리사이즈
