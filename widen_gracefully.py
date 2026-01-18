@@ -159,6 +159,64 @@ class ImageConverter:
 
         return cropped
 
+    def _load_face_cascade(self):
+        """Haar Cascade 얼굴 감지 모델 로드"""
+        if not hasattr(self, "face_cascade"):
+            # OpenCV 내장 Haar Cascade 사용
+            haar_path = cv2.data.haarcascades
+            self.face_cascade = cv2.CascadeClassifier(
+                f"{haar_path}/haarcascade_frontalface_default.xml"
+            )
+            if self.face_cascade.empty():
+                raise RuntimeError("Haar Cascade 모델 로드 실패")
+
+    def crop_16_9_smart_face_cv2(self, img):
+        """OpenCV Haar Cascade 기반 얼굴 감지 스마트 크롭"""
+        width, height = img.size
+
+        # 모델 로드 (첫 번째만)
+        if not hasattr(self, "face_cascade"):
+            print("얼굴 감지 모델 로드 중...")
+            self._load_face_cascade()
+            print("모델 로드 완료")
+
+        # PIL → OpenCV
+        img_array = np.array(img)
+
+        # 그레이스케일 변환
+        gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+
+        # 얼굴 감지
+        faces = self.face_cascade.detectMultiScale(
+            gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
+        )
+
+        if len(faces) > 0:
+            # 첫 번째 얼굴 사용
+            (x, y, w, h) = faces[0]
+
+            # 얼굴 중심
+            face_center_y = y + h // 2
+
+            # 타겟 높이
+            target_height = int(width * 9 / 16)
+
+            # 얼굴이 중앙 상단 1/3 지점에 오도록 크롭
+            crop_y = max(
+                0, min(face_center_y - target_height // 3, height - target_height)
+            )
+
+            print(f"얼굴 감지됨 ({len(faces)}개), 크롭 Y={crop_y}")
+        else:
+            # 얼굴 없으면 중앙 크롭
+            target_height = int(width * 9 / 16)
+            crop_y = (height - target_height) // 2
+            print("얼굴 감지되지 않음, 중앙 크롭 사용")
+
+        cropped = img.crop((0, crop_y, width, crop_y + target_height))
+
+        return cropped
+
     def convert_to_16x9(self, img):
         """16:9 변환 (조건부 처리: 좁은 이미지는 좌우 블러 확장, 넓은 이미지는 중앙 크롭)"""
         current_width, current_height = img.size
