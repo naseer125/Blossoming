@@ -1,5 +1,23 @@
 # AI Rules - Blossoming
 
+## 1. 운영 지침 (Operating Guidelines)
+
+- **최상위 지침:** 본 문서(`RULES.md`)는 AI의 모든 행동, 어조, 의사결정의 절대적 기준이다.
+- **연속성 유지:** 세션 시작 시 **GitHub Release** 내역 및 **`git log`**를 참조하여 중단된 지점부터 문맥을 복구한다.
+- **파일 권한[Critical]:** `RULES.md`,`CONTEXT.md` 삭제 절대 불가능, 수정이 필요할시 사용자에게 허락을 받아야함.
+- **용어 선택:** IT 용어는 영어 원문 사용 (예: Race Condition, Idempotency) 한국어와 영어로 혼용하여 사용합니다.
+
+## 2. Git Flow & Guidelines
+
+- **GitHub Flow**: `main` 브랜치 중심의 전략을 사용한다.
+- **Commit & Push Policy**:
+  - `git add` 와 `git commit` 포함한 정보 조회용 `git` 명령어 및 단순 시스템 조회 명령어(`ls`, `which`, `env`, `pwd` 등)는 개발 과정에서 AI가 자율적으로 수시로 수행한다.
+  - **커밋 시점**: 모든 커밋은 `ROADMAP.md`에 정의된 특정 항목 또는 단계를 완료했을 때 수행함을 원칙으로 한다.
+  - `git push` 명령어는 사용자가 채팅창을 통해 **명시적으로 "push"를 요청한 경우에만** 수행한다. AI가 먼저 푸시 여부를 묻거나 도구를 제안하지 않는다.
+  - **주의**: `git push` 명령어는 다른 명령어와 조합(`&&`, `;` 등)하여 사용하지 않고 단독으로 실행한다.
+- **Commit Message**: Conventional Commits를 준수하며, **말머리(Prefix)는 영문**으로, **제목과 내용은 한국어**로 작성한다. (예: `feat: 신규 기능 추가`, `docs: 문서 수정`)
+  - **내부 업데이트**: 릴리즈 사이의 세부 작업은 `0.0.x` 패치 버전으로 관리하며, 단순 커밋으로 기록한다.
+
 ## 스크립트 처리 규칙
 
 ### Python 스크립트 (`widen_gracefully.py`)
