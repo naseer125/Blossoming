@@ -8,6 +8,12 @@
 # Python 버전 (권장 - 가장 빠름)
 python3 widen_gracefully.py 입력파일.jpg
 
+# uv 사용 (의존성 없이 실행)
+uv run widen_gracefully.py 입력파일.jpg
+
+# uvx 사용 (단일 실행)
+uvx --from Pillow,numpy,opencv-python widen_gracefully.py 입력파일.jpg
+
 # Go 버전 (단일 바이너리 - 배포 용이)
 ./widen-gracefully-go 입력파일.jpg
 
@@ -34,8 +40,17 @@ chmod +x widen-gracefully-memory.sh
 ### Python 버전
 
 ```bash
+# uv 설치
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
 # 의존성 설치
 uv pip install Pillow numpy opencv-python
+
+# 또는 uv run으로 실행 (자동 의존성 관리)
+uv run widen_gracefully.py 입력파일.jpg
+
+# 또는 uvx로 단일 실행 (설치 불필요)
+uvx --from Pillow,numpy,opencv-python widen_gracefully.py 입력파일.jpg
 ```
 
 ### Shell 버전
@@ -74,6 +89,12 @@ chmod +x widen-gracefully-go
 python3 widen_gracefully.py ariel-introduction-04-10000px.jpg
 # 결과: python/ariel-introduction-04-4k.jpg
 
+# uv 사용
+uv run widen_gracefully.py ariel-introduction-04-10000px.jpg
+
+# uvx 사용 (의존성 없이 한번만 실행)
+uvx --from Pillow,numpy,opencv-python widen_gracefully.py ariel-introduction-04-10000px.jpg
+
 # Shell
 ./widen-gracefully-memory.sh ariel-introduction-04-10000px.jpg
 # 결과: shell/ariel-introduction-04-4k.jpg
@@ -88,6 +109,12 @@ python3 widen_gracefully.py ariel-introduction-04-10000px.jpg
 python3 widen_gracefully.py /path/to/images
 # 결과: python/ 폴더에 모든 이미지가 변환됨
 
+# uv 사용
+uv run widen_gracefully.py /path/to/images
+
+# uvx 사용 (의존성 없이 한번만 실행)
+uvx --from Pillow,numpy,opencv-python widen_gracefully.py /path/to/images
+
 # Shell
 ./widen-gracefully-memory.sh /path/to/images
 # 결과: shell/ 폴더에 모든 이미지가 변환됨
@@ -96,6 +123,10 @@ python3 widen_gracefully.py /path/to/images
 **현재 폴더의 모든 이미지 처리**:
 ```bash
 python3 widen_gracefully.py .
+# 또는
+uv run widen_gracefully.py .
+# 또는
+uvx --from Pillow,numpy,opencv-python widen_gracefully.py .
 # 또는
 ./widen-gracefully-memory.sh .
 ```
@@ -127,6 +158,18 @@ temp/
 | 8708x11608 | shell/ariel-introduction-04-4k.jpg | 3840x2160 |
 
 ## 어떤 버전을 써야 하나요?
+
+### uv 사용 (추천)
+- **의존성 관리**: 자동으로 필요한 패키지 관리
+- **가상 환경**: 프로젝트별 격리된 환경 제공
+- **빠른 설치**: pip보다 훨씬 빠른 의존성 설치
+- **프로젝트 관리**: 프로젝트 단위로 패키지 관리
+
+### uvx 사용
+- **일회성 실행**: 의존성 없이 한 번만 실행할 때
+- **설치 불필요**: 시스템에 패키지 설치 없이 실행
+- **테스트용**: 도구를 테스트하거나 시도해볼 때
+- **가벼운 사용**: 별도의 가상 환경 관리 없이 실행
 
 ### Python 버전을 써야 할 때
 - **가장 빠른 처리가 필요할 때**: 13.1배 더 빠름
