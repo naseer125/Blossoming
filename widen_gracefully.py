@@ -92,6 +92,30 @@ class ImageConverter:
         print(f"리사이즈 완료: {new_width}x{self.target_height}")
         return resized_img
 
+    def crop_to_16_9_center(self, img):
+        """중앙을 기준으로 16:9 비율로 크롭 (너비 유지)"""
+        width, height = img.size
+
+        target_height = int(width * 9 / 16)
+        crop_y = (height - target_height) // 2
+
+        print(f"16:9 크롭: {width}x{target_height}")
+        print(f"크롭 위치: Y={crop_y}부터 {crop_y + target_height}까지")
+
+        return img.crop((0, crop_y, width, crop_y + target_height))
+
+    def resize_to_width(self, img):
+        """넓이를 target_width로 리사이즈 (16:9 비율 유지)"""
+        width, height = img.size
+
+        scale_ratio = self.target_width / width
+        new_height = int(height * scale_ratio)
+
+        resized_img = img.resize((self.target_width, new_height), Image.LANCZOS)
+
+        print(f"리사이즈 완료: {self.target_width}x{new_height}")
+        return resized_img
+
     def convert_to_16x9(self, img):
         """16:9 변환 (조건부 처리: 좁은 이미지는 좌우 블러 확장, 넓은 이미지는 중앙 크롭)"""
         current_width, current_height = img.size
