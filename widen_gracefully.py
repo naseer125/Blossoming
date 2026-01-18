@@ -338,19 +338,41 @@ class ImageConverter:
         return self._crop_by_center(img)
 
     def _detect_hair_top(self, gray, face_center_x, face_y):
-        """엣지 감지로 머리카락 상단 감지"""
-        max_scan_height = face_y  # 얼굴 상단까지 스캔
-        threshold = 50  # 엣지 임계값
+        """배경색 기준 머리카락 끝 감지 (방안 3)"""
 
-        # 위로 스캔하며 가장 먼저 엣지 감지
-        for y in range(face_y - 1, max(0, face_y - max_scan_height), -1):
-            # 얼굴 중심 X 기준 픽셀 변화량 계산
-            current_pixel = gray[y, face_center_x]
-            prev_pixel = gray[y + 1, face_center_x]
+        # 배경색 결정 (얼굴 상단 위 20~50px, 좌우 100px)
+        bg_region = gray[
+            max(0, face_y - 50) : max(0, face_y - 20),
+            max(0, face_center_x - 100) : min(gray.shape[1], face_center_x + 100),
+        ]
+        bg_color = int(np.mean(bg_region))
 
-            # 엣지 감지 (머리카락 끝)
-            if abs(int(current_pixel) - int(prev_pixel)) > threshold:
-                return y + 1  # 머리카락 시작점
+        # 스캔 범위: 얼굴 상단 위 100px까지
+        max_scan_height = min(face_y + 50, face_y + 100)
+        threshold = 30  # 배경색 차이 임계값
+
+        # 다중 스캔 라인 (얼굴 중심, 좌측 50px, 우측 50px)
+        scan_lines = [
+            face_center_x,
+            max(0, face_center_x - 50),
+            min(gray.shape[1] - 1, face_center_x + 50),
+        ]
+        hair_tops = []
+
+        # 각 스캔 라인에서 머리카락 끝 감지
+        for scan_x in scan_lines:
+            for y in range(face_y - 1, max(0, face_y - max_scan_height), -1):
+                current_pixel = gray[y, scan_x]
+
+                # 배경색과 다른 지점(머리카락 시작) 감지
+                if abs(int(current_pixel) - bg_color) > threshold:
+                    hair_tops.append(y + 1)
+                    break
+
+        # 여러 결과의 평균 사용
+        if hair_tops:
+            crop_y = max(0, int(np.mean(hair_tops)) - int(face_y * 0.05))
+            return crop_y
 
         return None  # 감지 실패
 
