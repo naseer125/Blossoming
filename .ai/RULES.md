@@ -4,8 +4,7 @@
 
 - **최상위 지침:** 본 문서(`RULES.md`)는 AI의 모든 행동, 어조, 의사결정의 절대적 기준이다.
 - **연속성 유지:** 세션 시작 시 **GitHub Release** 내역 및 **`git log`**를 참조하여 중단된 지점부터 문맥을 복구한다.
-- **파일 권한[Critical]:** `RULES.md`,`CONTEXT.md` 삭제 절대 불가능, 수정이 필요할시 사용자에게 허락을 받아야함.
-- **용어 선택:** IT 용어는 영어 원문 사용 (예: Race Condition, Idempotency) 한국어와 영어로 혼용하여 사용합니다.
+- **파일 권한[Critical]:** `.ai/RULES.md`, `.ai/CONTEXT.md` 삭제 절대 불가능, 수정이 필요할시 사용자에게 허락을 받아야함.
 
 ## 2. Git Flow & Guidelines
 
@@ -105,6 +104,25 @@ python3 widen_gracefully.py .  # 현재 폴더
 - 파일 I/O 최소화 고려
 - bash 문법 검증
 
+### Go 스크립트 (`widen_gracefully.go`)
+
+**실행 방법**:
+```bash
+# 빌드 및 실행
+go build -o widen-gracefully-go widen_gracefully.go
+./widen-gracefully-go 입력파일.jpg
+```
+
+**중요 규칙**:
+1. Go 버전: 1.20 이상 (권장 1.23.4)
+2. 결과물 저장 경로: `go/` 폴더
+3. 배포: 단일 바이너리 형태 유지
+
+**코드 수정 시 확인사항**:
+- 외부 의존성 최소화 (표준 라이브러리 권장)
+- 세로형 이미지 처리 로직 준수 (스마트 크롭 미지원 시 명시)
+- 메모리 효율성 유지
+
 ## 처리 순서 (절대 변경 금지)
 
 ### Step 1: 워터마크 제거
@@ -137,6 +155,10 @@ python3 widen_gracefully.py .  # 현재 폴더
 - ❌ ICC 프로필 제거
 - ❌ 처리 순서 변경
 
+### Go 스크립트
+- ❌ 복잡한 외부 패키지 도입 지양
+- ❌ 바이너리 크기 비대화 주의
+
 ## 파일 경로 규칙
 
 ### 입력 파일
@@ -146,6 +168,7 @@ python3 widen_gracefully.py .  # 현재 폴더
 ### 출력 파일
 - Python: `python/ariel-introduction-{번호}-4k.jpg`
 - Shell: `shell/ariel-introduction-{번호}-4k.jpg`
+- Go: `go/ariel-introduction-{번호}-4k.jpg`
 
 ### 임시 파일
 - Python: 생성 금지 (메모리 처리)
@@ -162,6 +185,10 @@ python3 widen_gracefully.py .  # 현재 폴더
 - 파이프라인 최적화
 - 임시 파일 최소화
 - 병렬 처리 불권장 (성능 저하)
+
+### Go
+- 고루틴(Goroutine) 활용 가능
+- 메모리 사용량 모니터링
 
 ## 디버깅 규칙
 
@@ -182,6 +209,7 @@ python3 widen_gracefully.py .  # 현재 폴더
 ### 새로운 기능 추가
 1. Python: `ImageConverter` 클래스에 새 메서드 추가
 2. Shell: 새로운 bash 함수 추가
+3. Go: 구조체 메서드 추가
 3. `process_image()` 또는 `main()` 함수 호출 순서 확인
 
 ### 파라미터 변경
@@ -205,6 +233,7 @@ uv pip list
 ### 스크립트 버전
 - Python: 함수형 구조로 유지보수
 - Shell: 단일 함수로 통합
+- Go: 단일 파일(`main` 패키지) 유지
 
 ## 권장 사용 패턴
 
@@ -250,6 +279,7 @@ find /path/to/images -type d -maxdepth 1 | head -4 | xargs -P 4 -I {} python3 wi
 ### 성능 저하 시
 1. 메모리 처리 확인 (Python)
 2. 임시 파일 최소화 (Shell)
+3. 고루틴 누수 확인 (Go)
 3. 병렬 처리 개수 줄이기
 
 ## 보안 규칙

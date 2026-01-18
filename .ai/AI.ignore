@@ -13,6 +13,7 @@
 # 출력 디렉토리
 python/
 shell/
+go/
 N/
 Y/
 O/
@@ -53,6 +54,7 @@ __pycache__/
 dist/
 build/
 *.so
+widen-gracefully-go
 
 # 가상환경 (uv 사용 중이므로 제외)
 # .venv/ <- uv가 사용하므로 무시하지 않음
