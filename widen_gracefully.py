@@ -16,6 +16,16 @@ class ImageConverter:
         self.trim_fuzz = 5  # 5%
         self.quality = 98
 
+    def detect_orientation(self, img):
+        """이미지 방향 감지 (portrait/landscape/square)"""
+        width, height = img.size
+        if height > width:
+            return "portrait"
+        elif width > height:
+            return "landscape"
+        else:
+            return "square"
+
     def remove_watermark(self, img):
         """워터마크 영역 블러처리 (메모리 처리)"""
         img_width, img_height = img.size
@@ -163,6 +173,15 @@ class ImageConverter:
         try:
             with Image.open(input_path) as img:
                 icc_profile = img.info.get("icc_profile")
+
+                # 이미지 방향 감지
+                orientation = self.detect_orientation(img)
+                print(f"이미지 방향: {orientation}")
+
+                # 정방형: 건너뜀
+                if orientation == "square":
+                    print("정방형 이미지: 처리 건너뜀")
+                    return
 
                 # Step 1: 워터마크 제거
                 print("=== Step 1: 워터마크 제거 ===")
